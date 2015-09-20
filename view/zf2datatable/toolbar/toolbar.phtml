@@ -1,0 +1,46 @@
+<style>
+    #toolbar {
+    background: #DEE1EA;
+    background: -moz-linear-gradient(left, rgba(255,255,255,1) 0%, rgba(246,246,246,1) 22%, rgba(237,237,237,1) 100%);
+    background: -webkit-gradient(left top, right top, color-stop(0%, rgba(255,255,255,1)), color-stop(22%, rgba(246,246,246,1)), color-stop(100%, rgba(237,237,237,1)));
+    background: -webkit-linear-gradient(left, rgba(255,255,255,1) 0%, rgba(246,246,246,1) 22%, rgba(237,237,237,1) 100%);
+    background: -o-linear-gradient(left, rgba(255,255,255,1) 0%, rgba(246,246,246,1) 22%, rgba(237,237,237,1) 100%);
+    background: -ms-linear-gradient(left, rgba(255,255,255,1) 0%, rgba(246,246,246,1) 22%, rgba(237,237,237,1) 100%);
+    background: linear-gradient(to right, rgba(255,255,255,1) 0%, rgba(246,246,246,1) 22%, rgba(237,237,237,1) 100%);
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', endColorstr='#ededed', GradientType=1 );
+    margin-bottom: 3px;
+}
+</style>
+
+<div class="row row-fluid"  style="background-color:#DEE1EA;width:100%">
+     <div class="col-md-4 col-md-offset-4 text-center">
+           <span style="text-align:left;background-color:#DEE1EA;color:840084;font-size:22pt;font-weight:bold"><strong><?php echo $this->title; ?></strong></span>
+    </div>
+</div>
+<?php if(isset($this->childModelTop)):?>
+<div class="row">
+	<div class="col-md-12 text-center">
+    <?php echo $this->childModelTop;?>
+    </div>
+</div>
+<?php endif;?>
+<div class="row-fluid" id="toolbar">
+     <!-- Actions (add, ...) -->
+    <div class="col-md-9">
+        <?php if($this->isAllowFilter):?>
+        <a href="#" id="clearfilter" class="btn btn-default"><?php echo $this->translate("Clear Filter")?></a>
+        <?php endif;?>
+        <?php if($this->isAllowAddCrud):?>
+        <a href="?op=i&id=0"  class="btn btn-default"><?php echo $this->translate("Nuovo Record")?></a>
+        <?php endif;?>
+        <?php if(is_array($this->additionalButton)):?>
+                <?php foreach ($this->additionalButton as $button):?>
+                    <a href="<?php echo $button['href'];?>"  class="btn btn-default" name="<?php echo $button['name'];?>"  id="<?php echo $button['id'];?>"><?php echo $this->translate($button['label'])?></a>
+                <?php endforeach;?>
+        <?php endif;?>
+      </div>
+    <!-- Export buttons -->
+    <div class="col-md-3 text-right">
+        <?php echo $this->partial('zf2datatable/toolbar/export');?>
+    </div>
+</div>

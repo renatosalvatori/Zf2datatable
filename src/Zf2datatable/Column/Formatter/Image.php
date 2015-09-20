@@ -1,0 +1,92 @@
+<?php
+namespace Zf2datatable\Column\Formatter;
+
+use Zf2datatable\Column\AbstractColumn;
+use Zf2datatable\Column\Formatter\AbstractFormatter as AbstractFormatter;
+
+class Image extends AbstractFormatter
+{
+
+    protected $validRenderers = array(
+        'jqGrid',
+        'bootstrapTable',
+        'printHtml'
+    );
+
+    protected $attributes = array();
+
+    protected $prefix;
+
+    protected $linkAttributes = array();
+
+    public function setAttribute($name, $value)
+    {
+        $this->attributes[$name] = $value;
+    }
+
+    public function getAttributes()
+    {
+        return $this->attributes;
+    }
+
+    public function setLinkAttribute($name, $value)
+    {
+        $this->linkAttributes[$name] = $value;
+    }
+
+    public function getLinkAttributes()
+    {
+        return $this->linkAttributes;
+    }
+
+    /**
+     * Get the prefix
+     * @return string
+     */
+    public function getPrefix()
+    {
+        return $this->prefix;
+    }
+
+    /**
+     * Set the prefix of the image path and the prefix of the link
+     * @param string $prefix
+     */
+    public function setPrefix($prefix)
+    {
+        $this->prefix = $prefix;
+    }
+
+    public function getFormattedValue(AbstractColumn $column)
+    {
+        $row = $this->getRowData();
+        $value = $row[$column->getUniqueId()];
+        $prefix = $this->getPrefix();
+
+        if (is_array($value)) {
+            $thumb = $value[0];
+
+            if (isset($value[1])) {
+                $original = $value[1];
+            } else {
+                $original = $thumb;
+            }
+        } else {
+            $thumb = $value;
+            $original = $value;
+        }
+
+        $linkAttributes = array();
+        foreach ($this->getLinkAttributes() as $key => $value) {
+            $linkAttributes[] = $key . '="' . $value . '"';
+        }
+
+        $attributes = array();
+        foreach ($this->getAttributes() as $key => $value) {
+            $attributes[] = $key . '="' . $value . '"';
+        }
+
+        return '<a href="' . $prefix . $original . '" ' . implode(' ', $linkAttributes) . '><img src="' . $prefix . $thumb . '" ' . implode(' ', $attributes) . ' /></a>';
+
+    }
+}

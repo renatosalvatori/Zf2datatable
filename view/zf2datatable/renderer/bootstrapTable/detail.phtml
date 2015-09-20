@@ -1,0 +1,60 @@
+<?php
+$records = $view_detail;
+$columnNumber = 0;
+$controller = substr($this->main_ruote["controller"],strrpos($this->main_ruote["controller"],'\\')+1);
+$action 	= $this->main_ruote["action"];
+$number =0;
+?>
+<br />
+<div class="container-fluid">
+            <div class="col-md-6 col-md-offset-3">
+                      <div class="panel panel-default">
+                            <div class="panel-heading"><span class="glyphicon glyphicon-eye-open"></span>&nbsp;<?php echo $this->translate('View');?></div>
+                             <div class="panel-body">
+                                <div class="row-fluid" >
+                                        <div class="col-md-12">
+                                                <a href="<?php echo $this->url($this->main_ruote["routeName"],
+                                                array('controller'=>$controller,
+                                                          'action' => $action));?>?keepCache=1"><?php echo  $this->translate('[back to main page]')?></a>
+                                        </div>
+                                </div>
+                                <div class="row-fluid" >
+                                    <div class="col-md-12">
+                                        <hr />
+                                    </div>
+                                </div>
+                        <?php foreach($records as $label => $record):?>
+                        <?php //var_dump($record);?>
+                                <?php if($columnNumber == 0):?>
+                                        <div class="row-fluid" >
+                                <?php endif;?>
+                                        <div class="col-md-6">
+                                                <label for="<?php echo $label;?>">
+                                                <strong>[<?php echo $label;?>]</strong>
+                                                </label>
+                                                <?php
+                                                if($record instanceof \DateTime)
+                                                        echo $record->format('Y-m-d');
+                                                elseif(is_object($record))
+                                                    continue; // to do
+                                                else
+                                                        echo $record;
+                                                ?>
+                                        </div>
+                                        <?php
+                                        $number++;
+                                        $columnNumber++;
+                                        ?>
+                                <?php if($columnNumber > 1 || $number == (count($records)-1)):?>
+                                        </div>
+                                        <?php $columnNumber = 0;?>
+                                <?php endif;?>
+                        <?php endforeach;?>
+                </div>
+                <div class="row-fluid">
+                    &nbsp;
+                </div>
+            </div>
+       </div>
+</div>
+

@@ -1,0 +1,76 @@
+<br />
+
+                    <div class="row-fluid">
+                             <div class="col-md-6 col-md-offset-3">
+                                 <div class="panel panel-default">
+                                    <div class="panel-heading"><span class="glyphicon glyphicon-pencil"></span>&nbsp;<?php echo $this->translate('Edit/Insert');?>
+                                        &nbsp;<strong>[<?php echo $this->translate($this->title);?>]</strong>
+                                    </div>
+                                        <div class="panel-body">
+                                    <?php
+                                    $form = $this->crudform;
+                                    $form->prepare();
+
+                                    echo $this->form()->openTag($form);
+                                    echo '<div class="control-group">';
+                                    foreach ($form as $elm){
+                                        if($elm->getName()=='submit' || $elm->getName()=='cancel' ) continue;
+                                        if($elm->getAttribute('type')=='hidden'){
+                                            $hiddenElemet[]= $elm;
+                                            continue;
+                                        }
+                                        echo '<div class="row"><div class="col-md-4">';
+                                        echo '<label class="control-label"  for="'.$elm->getName().'">'.$elm->getLabel().'</label>';
+                                            echo '<div class="controls">';
+                                            if($elm instanceof \Zf2datatable\Form\Element\DateCalendar){
+                                                echo $this->zf2formdatecalendar($elm);
+                                            }
+                                            elseif($elm instanceof \Zf2datatable\Form\Element\DateTimeCalendar){
+                                                echo $this->zf2formdatetimecalendar($elm);
+                                            }
+                                            elseif($elm instanceof \Zf2datatable\Form\Element\CKEditor){
+                                                echo $this->formckeditor($elm);
+                                            }
+                                            else
+                                                echo $this->formElement($elm);
+
+                                            echo $this->formelementerrors($elm);
+                                            echo '</div>';
+                                    echo '</div></div>';
+                                    }
+                                    echo '</div>';
+                                    echo '<br />';
+                                    if (is_array($hiddenElemet)){
+                                            foreach($hiddenElemet as $elm){
+                                                  echo $this->formElement($elm);
+                                            }
+                                    }
+                                    echo '<div class="row"><div class="col-md-4">';
+                                    echo $this->formButton($form->get('submit'),$this->translate('Save'));
+                                    echo '&nbsp;&nbsp;';
+                                    echo $this->formButton($form->get('cancel'),$this->translate('Cancel'));
+                                    echo '</div></div>';
+
+                                    //echo $this->formCollection($this->crudform);
+                                    echo $this->form()->closeTag();
+
+                                    $controller = substr($this->main_ruote["controller"],strrpos($this->main_ruote["controller"],'\\')+1);
+                                    $action 	= $this->main_ruote["action"];
+                                    ?>
+                                 </div>
+                            </div>
+                </div>
+        </div>
+<?php $this->placeholder('bottomScripts')->captureStart(); ?>
+<script language="JavaScript">
+jQuery(document).ready(function(){
+    <?php echo $jsCodeElement;?>
+    <?php echo $injectedJsFormCode;?>
+	$('#cancelbutton').click(function(){
+		window.location.href = "<?php echo $this->serverUrl().$this->url($this->main_ruote["routeName"],
+				array('controller'=>$controller,
+					  'action' => $action));?>";
+	});
+});
+</script>
+<?php $this->placeholder('bottomScripts')->captureEnd() ?>

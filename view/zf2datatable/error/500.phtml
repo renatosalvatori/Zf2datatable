@@ -1,0 +1,31 @@
+<?php ?>
+<div class="error-container">
+				<h1 style="color:#FFOOOO;">Oops!</h1>
+				<h2 style="color:#FFOOOO;">500 Server Error</h2>
+				<div class="error-details">
+				        <?php //var_dump($error);?>
+					    <?php if ($error == 'error-cache-filter-expired') : ?>
+					        <?php echo $msg;?>  del controller <?php echo($controller);?>
+					        <?php if ($action) : ?>
+					        ::<?php echo($action);?>Action()
+					        <?php endif;?>
+					     <?php elseif ($error == 'error-cache-filter-expired') : ?>
+					         <?php echo $msg;?>  del controller <?php echo($controller);?>
+					        <?php if ($action) : ?>
+					        ::<?php echo($action);?>Action()
+					        <?php endif;?>
+					    <?php else : ?>
+					    An unknown error occured.
+					    <?php endif;?>
+
+				</div> <!-- /error-details -->
+
+				<div class="error-actions">
+					<a href="/" class="btn  btn-primary">
+						<i class="icon-chevron-left"></i>
+						&nbsp;
+						Close windows
+					</a>
+				</div> <!-- /error-actions -->
+</div> <!-- /error-container -->
+

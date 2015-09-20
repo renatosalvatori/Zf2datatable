@@ -1,0 +1,382 @@
+<?php
+use Zf2datatable\Column\Type;
+
+$hasMassActions = false;
+if(count($this->massActions) > 0){
+    $hasMassActions = true;
+}
+
+//hasMassActions = true;
+
+?>
+
+<style>
+<!--
+
+.loader
+    {
+        background: url(<?php echo $this->basePath(); ?>/img/ajax-loader.gif);
+        background-repeat: no-repeat;
+        background-position: right;
+    }
+.table-bordered > thead > tr > th{
+	font-size:16px;
+}
+table table-bordered table-striped{
+	font-size:6px;
+}
+
+.table-bordered > tbody > tr > td{
+	font-size:14px;
+        text-align:right;
+}
+-->
+</style>
+
+
+<div class="col-md-12">
+	<div class="row">
+             <div class="control-group">
+                       <div class="controls">
+                            <?php
+                            if (!empty($this->successMessages)) {
+								$messages = array_unique($this->successMessages);
+                                foreach ($messages as $msg) {
+                                    ?>
+                                    <div class="alert alert-success alert-dismissable">
+                                        <button type="button" class="close" data-dismiss="alert"  aria-hidden="true">&times;</button>
+                                        <?= $msg; ?>
+                                    </div>
+                                <?php
+                                }
+                            }
+                            ?>
+                       </div>
+             </div>
+    </div>
+	<div class="row-fluid">
+<?php if ($this->daterangeEnabled): ?>
+    <?php  $this->inlineScript()->captureStart();?>
+    function submitForm(){
+                beforeSubmitGrid();
+                $('#form_<?php echo $this->gridId; ?>').submit();
+    }
+
+    function beforeSubmitGrid(){
+                $('.daterange').each(function(key,value){
+                var filtro = $(this).val();
+                if(filtro !=''){
+                        var regex = /^>/gi;
+                        match = regex.exec(filtro);
+                        if(match){
+                        filtro = filtro.replace('>= ','');
+                        filtro = filtro.replace(',',' - ');
+                        $(this).val(filtro);
+                        }
+                    }
+
+                });
+     }
+
+
+    $(document).ready(function(){
+        <?php //If daterange bootstrapTable filter is enable show it ?>
+
+            $('a').click(function(){
+                beforeSubmitGrid();
+            });
+
+            $('#clearfilter').click(function(){
+                $("input[name^='toolbarFilters']").val("");
+                $("select[name^='toolbarFilters']").val("");
+                $("#form_<?php echo $this->gridId; ?>").submit();
+            });
+
+
+
+            $('input.daterange').daterangepicker(
+            <?= Zend\Json\Json::encode($this->daterangeParameters, false, array('enableJsonExprFinder' => true)); ?>
+            ).on('apply.daterangepicker', function(ev,picker){
+                beforeSubmitGrid();
+                this.form.submit();
+            });
+       });
+    <?php $this->inlineScript()->captureEnd(); ?>
+<?php endif; ?>
+
+
+<?php $this->placeholder('bottomScripts')->prepend("jQuery(document).ready(function(){\n")?>
+<?php $this->placeholder('bottomScripts')->prepend("<script type=\"text/javascript\">\n")?>
+
+
+<form name="form_<?php echo $this->gridId; ?>" id="form_<?php echo $this->gridId; ?>" method="post" action="<?php echo $this->url(null, array(), array(), true); ?>">
+    <input type="submit" style="width: 0px; height:0px; margin: 0; padding: 0; border: 0;" name="hiddenSubmit" />
+    <input type="hidden" name="<?php echo $this->parameterNames['sortColumns']; ?>" value="<?php echo $this->activeParameters[$this->parameterNames['sortColumns']]; ?>" />
+    <input type="hidden" name="<?php echo $this->parameterNames['sortDirections']; ?>" value="<?php echo $this->activeParameters[$this->parameterNames['sortDirections']]; ?>" />
+
+
+<?php echo $this->toolbar; ?>
+
+<?php
+$orderOnclick = 'document.forms[\'form_'.$this->gridId.'\'].elements[\'' . $this->parameterNames['sortColumns'] . '\'].value = \'%s\';';
+$orderOnclick .= 'document.forms[\'form_'.$this->gridId.'\'].elements[\'' . $this->parameterNames['sortDirections'] . '\'].value = \'%s\';';
+$orderOnclick.= 'document.forms[\'form_'.$this->gridId.'\'].submit(); return false;';
+
+$classes = array('table', 'table-striped', 'table-bordered');
+if($this->rowClickAction !== null){
+    $classes[] = 'table-hover';
+}
+?>
+
+<?php echo $this->partial($this->templateToolbar);?>
+
+<?php echo $this->childModelFilter;?><!-- todo -->
+
+<?php if ($this->additionalFilters):?>
+<table class="<?php echo implode(' ', $classes); ?>"  style="background-color:#DEE1EA;width:100%">
+    <thead>
+        <tr style="background-color: #EEE">
+            <td>
+                <table>
+                    <thead>
+                        <tr>
+                            <?php foreach($this->columns as $col):?>
+                                <?php if($col->getIsHiddenButShowFilter() === true):?>
+                                    <th><label for="<?php echo $col->getUniqueId();?>" ><?php echo $col->getLabel();?></label></th>
+                                <?php endif;?>
+                          <?php endforeach;?>
+                        </tr>
+                    </thead>
+                    <tbody>
+                       <tr>
+                            <?php foreach($this->columns as $col):?>
+                                <?php if($col->getIsHiddenButShowFilter() === true):?>
+                                    <?php $htmlFilter = '';
+                                    if ($col->isUserFilterEnabled() === true) {
+                                        if ($col->hasFilterSelectOptions() === true) {
+                                            $htmlFilter = '<select name="toolbarFilters[' . $col->getUniqueId() . ']" style="width: 80%" onchange="javascript:submitForm();" >';
+                                            foreach ($col->getFilterSelectOptions() as $value => $option) {
+                                                if ($col->getFilterActiveValue() == sprintf($col->getFilterDefaultOperation(), $value)) {
+                                                    $htmlFilter .= '<option value="' . $value . '" selected="selected">' . $option . '</option>';
+                                                } else if (($col->getFilterActiveValue() == '') && ($value === '')){
+                                                    $htmlFilter .= '<option value="' . $value . '" selected="selected">' . $option . '</option>';
+                                                } else {
+                                                    $htmlFilter .= '<option value="' . $value . '">' . $option . '</option>';
+                                                }
+                                            }
+                                            $htmlFilter .= '</select>';
+
+                                        } else if ($col->getType() instanceof \Zf2datatable\Column\Type\DateTime){
+                                            $htmlFilter = '<input type="text" id="' . $col->getUniqueId() . '_ID" name="toolbarFilters[' . $col->getUniqueId() . ']" style="width:150px" value="' . $col->getFilterActiveValue() . '" class="daterange" />';
+                                        } else {
+                                            $htmlFilter = '<input type="text" id="' . $col->getUniqueId() . '_ID" name="toolbarFilters[' . $col->getUniqueId() . ']" style="width:150px" value="' . $col->getFilterActiveValue() . '" />';
+                                        }
+                                    }
+                                    ?>
+                                <td class="<?php echo implode(',', $classes); ?>">
+                                    <?php echo $htmlFilter; ?>
+                                </td>
+                              <?php endif;?>
+                          <?php endforeach;?>
+                        </tr>
+                   </tbody>
+               </table>
+             </td>
+        </tr>
+    </thead>
+ </table>
+ <?php endif?>
+    <table class="<?php echo implode(' ', $classes); ?>"  style="background-color:#DEE1EA;width:100%">
+      <thead>
+        <tr style="background-color: #EEE">
+            <?php
+            if($hasMassActions === true){
+                echo '<th width="1%">
+                    <input type="checkbox" onclick="' . $this->gridId . '_toggleCheckboxes(this);" /></th>
+                ';
+
+            }
+
+            foreach($this->columns as $col){
+                /* @var $col \Zf2datatable\Column\AbstractColumn */
+                $classes = array();
+                $styles = array();
+
+
+               $type =$col->getType();
+               if($type instanceof \Zf2datatable\Column\Type\AutoComplete){
+                  $js=<<<JS
+            $("#{$col->getUniqueId()}_ID").autocomplete({
+                    source:'{$this->uriRedirectJson}?op=j&column={$col->getUniqueId()}',
+                    minLength: 3,
+                    autoFill: true,
+                    mustMatch:true,
+                    delay: 0,//0
+                    cacheLength: 1,
+                    max:30,
+                     select: function( event, ui ) {
+                     //add(event, ui);
+                     //utilizzare questo spazio per valorizzare ad esempio dei campi input con altri dati prelevati da db
+                     //$("#campo_nascosto").val(ui.item.nome_campo_array_settato_in_lista-utenti);
+                     },
+                    search: function (e, u) {
+                        $(this).addClass('loader');
+                    },
+                    response: function (e, u) {
+                        $(this).removeClass('loader');
+                    }
+             });
+JS;
+                  $this->placeholder('bottomScripts')->append($js);
+               }
+
+                $id = $col->getUniqueId();
+
+                $label = '';
+                if($col->getLabel() != ''){
+                    $label = $this->translate($col->getLabel());
+                }
+
+                $width = $col->getWidth();
+                if($width != ''){
+                    //$styles[] = 'width: '.$this->escapehtmlattr($width).'%';
+                    $styles[] = 'width: '.$this->escapehtmlattr($width).'px';
+                }
+
+
+                if($col->isHidden() === true){
+                    $classes[] = 'hidden';
+                }
+                if($col->getType() instanceof Type\Number){
+                    $styles[] = 'text-align: right';
+                }
+                else{
+                    $styles[] = 'text-align: center';
+                }
+                ?>
+                <th id="<?php echo $this->escapehtmlattr($id); ?>" class="<?php echo implode(',', $classes); ?>" style="<?php echo implode(';', $styles); ?>">
+
+                    <?php if($col->isUserSortEnabled() === true):
+                        if($col->isSortActive() === true && $col->getSortActiveDirection() === 'ASC'){
+                            $direction = 'DESC';
+                        } else{
+                            $direction = 'ASC';
+                        }
+                        ?>
+                        <a href="<?php echo
+                            $this->url(null,
+                                array(),
+                                array(
+                                    'query' => array_merge($this->activeParameters, array(
+                                            $this->parameterNames['sortColumns'] => $col->getUniqueId(),
+                                            $this->parameterNames['sortDirections'] => $direction,
+                                        )
+                                    )
+                                ),
+                                true
+                            );?>
+                        " onclick="<?php echo sprintf($orderOnclick, $col->getUniqueId(), $direction); ?>">
+                            <?php echo $this->escapeHtml($label); ?>
+                        </a>
+                    <?php else: ?>
+                        <?php echo $this->escapeHtml($label); ?>
+                    <?php endif; ?>
+
+                    <?php
+                    if($col->isSortActive() === true){
+                        if($col->getSortActiveDirection() === 'ASC'):?>
+                            <i class="icon-chevron-down glyphicon glyphicon-chevron-down"></i>
+                        <?php else: ?>
+                            <i class="icon-chevron-up glyphicon glyphicon-chevron-up"></i>
+                        <?php endif;
+                    }
+                    ?>
+                </th>
+                <?php
+                }
+                ?>
+        </tr>
+
+        <!-- User filters -->
+        <?php if($this->isUserFilterEnabled === true):?>
+            <tr style="background-color: #EEE; text-align:right">
+                <?php
+                if($hasMassActions === true){
+                    echo '<td></td>';
+                }
+                foreach($this->columns as $col){
+                    /* @var $col \Zf2datatable\Column\AbstractColumn */
+                    $classes = array();
+                    if($col->isHidden() === true){
+                        $classes[] = 'hidden';
+                    }
+
+                    $htmlFilter = '';
+                    if ($col->isUserFilterEnabled() === true) {
+
+                        $width = $col->getWidth();
+                        if ($col->hasFilterSelectOptions() === true) {
+                            $htmlFilter = '<select name="toolbarFilters[' . $col->getUniqueId() . ']" style="width:'.$width.'.px" onchange="javascript:submitForm();" >';
+                            foreach ($col->getFilterSelectOptions() as $value => $option) {
+                                if ($col->getFilterActiveValue() == sprintf($col->getFilterDefaultOperation(), $value)) {
+                                    $htmlFilter .= '<option value="' . $value . '" selected="selected">' . $option . '</option>';
+                                } else if (($col->getFilterActiveValue() == '') && ($value === '')){
+                                    $htmlFilter .= '<option value="' . $value . '" selected="selected">' . $option . '</option>';
+                                } else {
+                                    $htmlFilter .= '<option value="' . $value . '">' . $option . '</option>';
+                                }
+                            }
+                            $htmlFilter .= '</select>';
+
+                        } else if ($col->getType() instanceof \Zf2datatable\Column\Type\DateTime){
+                            $htmlFilter = '<input type="text" id="' . $col->getUniqueId() . '_ID" name="toolbarFilters[' . $col->getUniqueId() . ']" style="width:'.$width.'.px" value="' . $col->getFilterActiveValue() . '" class="daterange" />';
+                        } else {
+                            $htmlFilter = '<input type="text" id="' . $col->getUniqueId() . '_ID" name="toolbarFilters[' . $col->getUniqueId() . ']" style="width:'.$width.'.px" value="' . $col->getFilterActiveValue() . '" />';
+                        }
+                    }
+                    ?>
+                    <td class="<?php echo implode(',', $classes); ?>">
+                        <?php if($col->getIsHiddenButShowFilter() === false): ?>
+                            <?php echo $htmlFilter; ?>
+                        <?php endif;?>
+                    </td>
+                    <?php
+                }
+            ?>
+            </tr>
+        <?php endif; ?>
+    </thead><!-- END table header -->
+
+    <!-- Start table BODY -->
+    <tbody>
+        <?php foreach($this->data as $row): ?>
+            <?php echo $this->bootstrapTableRow($row, $this->columns, $this->rowClickAction, $this->rowStyles, $hasMassActions); ?>
+        <?php endforeach; ?>
+    </tbody>
+</table>
+<?php echo $this->partial('zf2datatable/renderer/bootstrapTable/footer'); ?>
+</form>
+    <?php echo $this->childModel;?>
+	</div>
+</div>
+
+<?php $this->placeholder('bottomScripts')->captureStart(); ?>
+<?php echo $this->injectedJsCode;?>
+<?php echo $this->injectedJsFormCode;?>
+
+	jQuery('a > span').on('click',function(event) {
+	    if($(this).hasClass( 'glyphicon glyphicon-trash' )){
+	    	event.preventDefault();
+	    	var r=confirm("<?php echo $this->translate("Are you sure you want to delete?");?>");
+		    if (r==true)   {
+		       window.location = $(this).parent().attr('href');
+		    }
+	    }
+	});
+
+<?php $this->placeholder('bottomScripts')->captureEnd() ?>
+
+
+
+<?php $this->placeholder('bottomScripts')->append('});')?>
+<?php $this->placeholder('bottomScripts')->append('</script>')?>

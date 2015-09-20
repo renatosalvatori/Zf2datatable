@@ -1,0 +1,55 @@
+<?php
+namespace Zf2datatable\Column\Formatter;
+
+use Zf2datatable\Column\AbstractColumn;
+
+class FileSize extends AbstractFormatter
+{
+
+    /**
+     * We implement isApply here ourself, because it's always valid!
+     *
+     * @var unknown
+     */
+    protected $validRenderers = array();
+
+    protected static $prefixes = array(
+        '',
+        'K',
+        'M',
+        'G',
+        'T',
+        'P',
+        'E',
+        'Z',
+        'Y'
+    );
+
+    public function isApply()
+    {
+        return true;
+    }
+
+    /**
+     * The value should be in bytes
+     *
+     * @see \Zf2datatable\Column\Formatter\AbstractFormatter::getFormattedValue()
+     */
+    public function getFormattedValue(AbstractColumn $column)
+    {
+        $row = $this->getRowData();
+        $value = $row[$column->getUniqueId()];
+
+        if ($value == '') {
+            return $value;
+        }
+
+        $index = 0;
+        while ($value >= 1024 && $index < count(self::$prefixes)) {
+            $value = $value / 1024;
+            $index ++;
+        }
+
+        return sprintf('%1.2f %sB', $value, self::$prefixes[$index]);
+    }
+}

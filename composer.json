@@ -1,0 +1,41 @@
+{
+  "name" : "Zf2datatable",
+  "description" : "Zend Framework 2 Module that provides a datagrid for different datasources and output formats",
+  "require" : {
+    "php" : ">=5.3.23",
+    "zendframework/zendframework" : ">=2.3.3",
+    "doctrine/doctrine-orm-module" : "=0.8.0",
+    "doctrine/doctrine-module" : "=0.8.0",
+    "phpunit/phpunit" : "=4.2.6"
+  },
+  "require-dev" : {
+    "satooshi/php-coveralls" : "dev-master",
+    "fabpot/php-cs-fixer" : "*@dev",
+    "phpmd/phpmd" : "=1.5.1",
+    "mockery/mockery" : "=0.9.2",
+    "codeception/codeception" : "=2.0.5",
+    "sebastian/phpcpd" : "=2.0.1",
+    "phpunit/phpunit-selenium" : "=1.4.1",
+    "phing/phing" : "=2.8.2",
+    "doctrine/doctrine-mongo-odm-module" : "dev-master"
+  },
+  "authors" : [ {
+    "name" : "Renato Salvatori",
+    "email" : "rennasalva@gmail.com"
+  } ],
+  "keywords" : [ "Datatable", "module", "zf2", "Zend Framework", "Doctrine", "MongoDB" ],
+  "autoload" : {
+    "psr-0" : {
+      "Zf2datatable\\" : "src/",
+      "Zf2datatableTest\\" : "tests/"
+    }
+  },
+  "suggest" : {
+    "ext-intl" : "*",
+    "doctrine/doctrine-orm-module" : ">=0.8",
+    "codeplex/phpexcel" : "~1.7",
+    "tecnick.com/tcpdf" : "~6.0"
+  },
+  "license" : "WTFPL",
+  "type" : "library"
+}
