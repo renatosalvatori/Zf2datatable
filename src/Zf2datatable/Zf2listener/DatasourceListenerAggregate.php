@@ -32,12 +32,15 @@ class DatasourceListenerAggregate implements SharedListenerAggregateInterface, S
 	    return $this->serviceLocator;
 	}
 
-
+	/**
+	 * @param \Zend\EventManager\SharedEventManagerInterface $e
+	 */
 	public function attachShared(\Zend\EventManager\SharedEventManagerInterface $e)
 	{
 	    if($this->getServiceLocator()->has ( 'zf2datatable_logger' )){
 	            $logger  = $this->getServiceLocator()->get ( 'zf2datatable_logger' );
         	    $adapter = $this->getServiceLocator()->get ( 'zf2datatable_adapter' );
+				$services = $this->getServiceLocator();
 
         	    // tablegateway datasource
         	    $this->listeners[] =$e->attach('Zend\Db\TableGateway\TableGateway', 'preSelect', function ($e) use($logger, $adapter) {
