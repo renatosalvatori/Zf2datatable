@@ -23,12 +23,16 @@ class Module
         $eventManager->attachAggregate(new \Zf2datatable\Strategy\ExceptionStrategy());
 
 
+        if( $services->has('zf2datatable.listener')){
+            $listenerDataSource = $services->get('zf2datatable.listener');
+            $shareEventManager->attachAggregate($listenerDataSource);
+        }
+
 
         $modules =$services->get('ModuleManager')->getModules();
         if(in_array('DoctrineModule', $modules)){
 
-            $listenerDataSource = $services->get('zf2datatable.listener');
-            $shareEventManager->attachAggregate($listenerDataSource);
+
 
        /// event manager doctrine
                $dem =$services->get('doctrine.entitymanager.orm_zfcDatagrid');
