@@ -346,8 +346,9 @@ class ZendSelect extends AbstractDataSource
      */
     public function update($data, $where){
         $sql = $this->getAdapter();
+        $sql->setTable($this->table);
         $update = $sql->update();
-        $update->table($this->table);
+
 
         $shortCircuit = function ($r){
             if (is_array($r) || $r instanceof \ArrayObject) {

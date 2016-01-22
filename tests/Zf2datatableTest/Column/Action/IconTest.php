@@ -30,7 +30,7 @@ class IconTest extends PHPUnit_Framework_TestCase
         $this->assertEquals('icon-add', $icon->getIconClass());
         $this->assertTrue($icon->hasIconClass());
 
-        $this->assertEquals('<a href="#"><i class="icon-add"></i></a>', $icon->toHtml(array()));
+        $this->assertEquals('<a href="#"><span class="icon-add"></span></a>', $icon->toHtml(array()));
     }
 
     public function testIconLink()
@@ -38,7 +38,6 @@ class IconTest extends PHPUnit_Framework_TestCase
         $icon = new Icon();
 
         $this->assertFalse($icon->hasIconLink());
-
         $icon->setIconLink('/images/21/add.png');
         $this->assertEquals('/images/21/add.png', $icon->getIconLink());
         $this->assertTrue($icon->hasIconLink());

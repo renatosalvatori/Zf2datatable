@@ -71,7 +71,7 @@ class Filter
      * Apply a filter based on a column
      *
      * @param Column\AbstractColumn $column
-     * @param unknown               $inputFilterValue
+     * @param string  $inputFilterValue
      */
     public function setFromColumn(Column\AbstractColumn $column, $inputFilterValue)
     {

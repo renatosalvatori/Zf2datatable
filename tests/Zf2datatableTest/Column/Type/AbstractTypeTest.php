@@ -38,5 +38,4 @@ class AbstractTypeTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('01.05.12', $this->type->getUserValue('01.05.12'));
     }
 }
-
 ?>

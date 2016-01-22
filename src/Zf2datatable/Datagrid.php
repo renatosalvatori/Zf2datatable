@@ -1904,7 +1904,8 @@ class Datagrid implements ServiceLocatorAwareInterface, EventManagerAwareInterfa
         }
 
         if (! is_array($config) && ! $config instanceof Column\AbstractColumn) {
-            throw new \InvalidArgumentException('createColumn() supports only a config array or instanceof Column\AbstractColumn as a parameter');
+            throw new \InvalidArgumentException('createColumn()
+            orts only a config array or instanceof Column\AbstractColumn as a parameter');
         }
 
         $colType = isset($config['colType']) ? $config['colType'] : 'Select';
@@ -2615,9 +2616,16 @@ class Datagrid implements ServiceLocatorAwareInterface, EventManagerAwareInterfa
     
     public function render()
     {
-        $datasource = $this->getDataSource();
-        $plgmanager = $this->getPluginControllerManager();
-        $request = $this->getMvcEvent()->getRequest();
+        $datasource         = $this->getDataSource();
+        $plgmanager         = $this->getPluginControllerManager();
+        $plgWmanager        = $this->getPluginViewHelperManager();
+        $request            = $this->getMvcEvent()->getRequest();
+
+        $plgredirect        = $plgmanager->get('redirect');
+        $plgpostredirectget = $plgmanager->get('PostRedirectGet');
+        $plgurl             = $plgmanager->get('url');
+        $plgflashmessanger  = $plgmanager->get('flashmessenger');
+
 
         if ($request instanceof ConsoleRequest) {
             return $this->renderConsole();
@@ -2647,11 +2655,6 @@ class Datagrid implements ServiceLocatorAwareInterface, EventManagerAwareInterfa
             ->getMatchedRouteName();
 
         $renderType = 'render';
-        $plgredirect = $plgmanager->get('redirect');
-        $plgpostredirectget = $plgmanager->get('PostRedirectGet');
-
-        $plgurl = $plgmanager->get('url');
-        $plgflashmessanger = $plgmanager->get('flashmessenger');
 
         $identity = $this->formatIdentityColumns();
         $identityValue = $request->getQuery($identity, 0);
@@ -2668,7 +2671,7 @@ class Datagrid implements ServiceLocatorAwareInterface, EventManagerAwareInterfa
 
         $this->setDefaultUriRedirect($url);
 
-        if($op == '') {
+        if(empty($op)) {
             if ($this->isCrud) {
                 $this->addCrudColumn();
             }
@@ -2750,7 +2753,6 @@ class Datagrid implements ServiceLocatorAwareInterface, EventManagerAwareInterfa
                     if (is_array ( $uploadFiles )) {
                         foreach ( $uploadFiles as $key => $uploadFile ) {
                             $adapter = new \Zend\File\Transfer\Adapter\Http ();
-
                             $estensione = substr ( $uploadFile ['name'], strrpos ( $uploadFile ['name'], '.' ) + 1 );
                             $uniqueToken = md5 ( uniqid ( mt_rand (), true ) );
                             $file_name = $uniqueToken . '.' . $estensione;
@@ -2761,7 +2763,6 @@ class Datagrid implements ServiceLocatorAwareInterface, EventManagerAwareInterfa
                                 'overwrite' => true
                             );
                             $adapter->addFilter ( 'Rename', $filterRename );
-
 
                             if (is_array ( $uploadFile ) && $adapter->receive ( $uploadFile ['name'] )) {
                                 // to do
@@ -2776,6 +2777,7 @@ class Datagrid implements ServiceLocatorAwareInterface, EventManagerAwareInterfa
 
                         }
                     }
+
 
 
                     $object_validate_filter = $this->prepareCrudData($this->getFrmMainCrud()
@@ -2894,9 +2896,13 @@ class Datagrid implements ServiceLocatorAwareInterface, EventManagerAwareInterfa
                 $this->renderViewGrid();
             }
             elseif ($op == 'f' && $request->isGet()) {
-                // view datails
-                var_dump($this->getColumns());
-                $this->loadDataCrud($crudIdentity, "getFormRenderer");
+                // view datail
+                $load =$this->loadattach();
+                if($load instanceof \Zend\Http\Response\Stream){
+                    return $load;
+                }
+                else
+                    throw new \Exception('Load Fails');
 
            }
            elseif ($op =='j' && $request->isGet()) {//jsoncall
@@ -2925,6 +2931,116 @@ class Datagrid implements ServiceLocatorAwareInterface, EventManagerAwareInterfa
         }
 
         return $data;
+    }
+
+
+    public function loadattach() {
+        //error_reporting(E_ALL);
+        //ini_set('display_errors',1);
+
+        $request    = $this->getMvcEvent()->getRequest();
+        $stream     = new \Zend\Http\Response\Stream();;
+        $file       = $request->getQuery ( "file" );
+        $path       = $this->getPathFileUpload();
+
+        if ($file == '') {
+            throw new \Exception ( 'Allegato non specificato');
+        }
+
+        $fileDetail = explode(self::paramsSeparator, $file);
+        $mimeType = $this->validateMimeType ( $fileDetail[0]);
+
+        $stream->setStream(fopen($path.DIRECTORY_SEPARATOR.$fileDetail[0], 'r'));
+        $stream->setStatusCode(200);
+
+        $headers = new \Zend\Http\Headers();
+        $headers->addHeaderLine('Content-Type',$mimeType)
+            ->addHeaderLine('Content-Disposition','attachment;filename="' . $fileDetail[1] . '"')
+            ->addHeaderLine('Content-Length', filesize($path.DIRECTORY_SEPARATOR.$fileDetail[0]));
+        ob_end_clean();
+        $stream->setHeaders($headers);
+        return $stream;
+
+
+    }
+
+
+    protected function validateMimeType($filename){
+
+        $type_custom = function ($filename) {
+            $mime_types = array(
+
+                'txt' => 'text/plain',
+                'htm' => 'text/html',
+                'html' => 'text/html',
+                'php' => 'text/html',
+                'css' => 'text/css',
+                'js' => 'application/javascript',
+                'json' => 'application/json',
+                'xml' => 'application/xml',
+                'swf' => 'application/x-shockwave-flash',
+                'flv' => 'video/x-flv',
+
+                // images
+                'png' => 'image/png',
+                'jpe' => 'image/jpeg',
+                'jpeg' => 'image/jpeg',
+                'jpg' => 'image/jpeg',
+                'gif' => 'image/gif',
+                'bmp' => 'image/bmp',
+                'ico' => 'image/vnd.microsoft.icon',
+                'tiff' => 'image/tiff',
+                'tif' => 'image/tiff',
+                'svg' => 'image/svg+xml',
+                'svgz' => 'image/svg+xml',
+
+                // archives
+                'zip' => 'application/zip',
+                'rar' => 'application/x-rar-compressed',
+                'exe' => 'application/x-msdownload',
+                'msi' => 'application/x-msdownload',
+                'cab' => 'application/vnd.ms-cab-compressed',
+
+                // audio/video
+                'mp3' => 'audio/mpeg',
+                'qt' => 'video/quicktime',
+                'mov' => 'video/quicktime',
+
+                // adobe
+                'pdf' => 'application/pdf',
+                'psd' => 'image/vnd.adobe.photoshop',
+                'ai' =>  'application/postscript',
+                'eps' => 'application/postscript',
+                'ps' => 'application/postscript',
+
+                // ms office
+                'doc' => 'application/msword',
+                'rtf' => 'application/rtf',
+                'xls' => 'application/vnd.ms-excel',
+                'ppt' => 'application/vnd.ms-powerpoint',
+
+                // open office
+                'odt' => 'application/vnd.oasis.opendocument.text',
+                'ods' => 'application/vnd.oasis.opendocument.spreadsheet',
+            );
+
+            $ext = strtolower(array_pop(explode('.',$filename)));
+
+            if (array_key_exists(trim($ext), $mime_types)) {
+
+                return $mime_types[trim($ext)];
+            }
+            elseif (function_exists('finfo_open')) {
+                $finfo = finfo_open(FILEINFO_MIME);
+                $mimetype = finfo_file($finfo, $filename);
+                finfo_close($finfo);
+                return $mimetype;
+            }
+            else {
+                return 'application/octet-stream';
+            }
+        };
+        return $type_custom($filename);
     }
 
 

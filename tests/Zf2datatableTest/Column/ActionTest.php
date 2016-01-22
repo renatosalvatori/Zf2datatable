@@ -25,7 +25,7 @@ class ActionTest extends \PHPUnit_Framework_TestCase
     
     public function testAddRemoveAction()
     {
-        $this->markTestIncomplete();
+        //$this->markTestIncomplete();
         $column = new Column\Action();
     
         $this->assertCount(0, $column->getActions());

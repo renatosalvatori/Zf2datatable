@@ -5,6 +5,19 @@ use Zf2datatable\Filter;
 use Locale;
 use NumberFormatter;
 
+/**
+ * Class Number
+ * @package Zf2datatable\Column\Type
+ *
+ * $fmt = new NumberFormatter( 'de_DE', NumberFormatter::DECIMAL );
+    echo "Pattern: ".$fmt->getPattern()."\n";
+    echo $fmt->format(1234567.891234567890000)."\n";
+    $fmt->setPattern("#0.# kg");
+    echo "Pattern: ".$fmt->getPattern()."\n";
+    echo $fmt->format(1234567.891234567890000)."\n";
+ *
+ */
+
 class Number extends AbstractType
 {
 
@@ -152,6 +165,7 @@ class Number extends AbstractType
     protected function getFormatter()
     {
         $formatter = new NumberFormatter($this->getLocale(), $this->getFormatStyle());
+
         if ($this->getPattern() !== null) {
             $formatter->setPattern($this->getPattern());
         }
@@ -200,7 +214,6 @@ class Number extends AbstractType
     public function getUserValue($val)
     {
         $formatter = $this->getFormatter();
-
         $formattedValue = $formatter->format($val, $this->getFormatType());
 
         return (string) $this->getPrefix() . $formattedValue . $this->getSuffix();

@@ -254,7 +254,7 @@ return array(
             'Zf2datatable.datasource.zendSelect' => 'Zf2datatable\DataSource\ZendSelect',
             'Zf2datatable.datasource.zendTableSelect' => 'Zf2datatable\DataSource\ZendTableGateway',
 
-            // Datasources
+            // Datasources example
             'zf2datatable.examples.data.phpArray' => 'Zf2datatable\Examples\Data\PhpArray',
             'zf2datatable.examples.data.doctrine2' => 'Zf2datatable\Examples\Data\Doctrine2',
             'zf2datatable.examples.data.zendSelect' => 'Zf2datatable\Examples\Data\ZendSelect',
@@ -271,7 +271,7 @@ return array(
         )
         ,
 
-        'factories' => array(
+        'Factories' => array(
             'zf2datatable\Datagrid' => 'Zf2datatable\Service\DatagridFactory',
             'zf2datatable_adapter' => 'Zf2datatable\Service\ZendDbAdapterFactory',
             'zf2datatable_logger' => 'Zf2datatable\Service\LoggerServiceFactory',

@@ -61,7 +61,13 @@ class ZendTableGateway extends ZendSelect
         return $this->select;
     }
 
+    /**
+     * @param array $data
+     * @param $where
+     * @return mixed
+     */
     public function update($data, $where){
+        $dataEm = null;
         $shortCircuit = function ($r){
             if (is_array($r) || $r instanceof \ArrayObject) {
                 return true;
@@ -99,7 +105,7 @@ class ZendTableGateway extends ZendSelect
     }
 
     public function insert($data){
-
+        $dataEm = null;
         $shortCircuit = function ($r){
             if (is_array($r) || $r instanceof \ArrayObject) {
                 return true;
@@ -113,7 +119,7 @@ class ZendTableGateway extends ZendSelect
     	}
 
         if($dataEm instanceof \ArrayObject)
-            $datapreinsert = $dataEm;
+            $datapreinsert = $dataEm->getArrayCopy();
         elseif(is_array($dataEm)){
             $datapreinsert = $dataEm;
         }

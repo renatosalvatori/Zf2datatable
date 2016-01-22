@@ -143,7 +143,7 @@ class Module
     {
         if (class_exists('DoctrineORMModule\Service\DBALConnectionFactory')) {
             return array(
-                'factories' => array(
+                'Factories' => array(
                     'doctrine.connection.orm_zfcDatagrid' => new \DoctrineORMModule\Service\DBALConnectionFactory('orm_zfcDatagrid'),
                     'doctrine.configuration.orm_zfcDatagrid' => new \DoctrineORMModule\Service\ConfigurationFactory('orm_zfcDatagrid'),
                     'doctrine.entitymanager.orm_zfcDatagrid' => new \DoctrineORMModule\Service\EntityManagerFactory('orm_zfcDatagrid'),

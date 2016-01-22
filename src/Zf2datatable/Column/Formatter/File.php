@@ -15,11 +15,11 @@ class File extends AbstractFormatter
     public function getFormattedValue(AbstractColumn $column)
     {
         $row = $this->getRowData();
-        $value = $row[$column->getUniqueId()];
+        $rowValue = $row[$column->getUniqueId()];
 
-        if($value!=''){
+        if($rowValue!=''){
             //estract
-            $value = explode(self::paramsSeparator, $value);
+            $value = explode(self::paramsSeparator, $rowValue);
         }
 
 
@@ -28,14 +28,14 @@ class File extends AbstractFormatter
             $href=$this->getAttribute('href');
         }
         else
-            $href=$value[0];
+            $href=$value;
 
 
         if($this->getAttribute('path')!== null){
-            $path=$this->getAttribute('path');
+            $path=$this->getAttribute('path')."/";
         }
         else
-            $path='public';
+            $path='?op=f&file=';
 
 
 
@@ -52,7 +52,7 @@ class File extends AbstractFormatter
         else
             $target='';
 
-        $linkFile = "<a href=\"/$path/{$value[0]}\"  $title  $target > {$value[1]} </a>";
+        $linkFile = "<a href=\"$path{$rowValue}\"  $title  $target > {$value[1]} </a>";
         return $linkFile;
     }
 

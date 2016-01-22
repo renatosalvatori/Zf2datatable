@@ -10,9 +10,9 @@ use Zf2datatable\Action\Mass;
  */
 class MassTest extends PHPUnit_Framework_TestCase
 {
-    
+
     public function setUp(){
-        
+
     }
     
     public function tearDown(){
