@@ -92,7 +92,7 @@ class Datagrid implements ServiceLocatorAwareInterface, EventManagerAwareInterfa
     /**
      * View or Response
      *
-     * @var \Zend\Http\Response\Stream \Zend\View\Model\ViewModel
+     * @var \Zend\Http\Response\Stream
      */
     protected $response;
 
@@ -273,7 +273,7 @@ class Datagrid implements ServiceLocatorAwareInterface, EventManagerAwareInterfa
 
     /**
      *
-     * @var Zend\ServiceManager\
+     * @var Zend\Mvc\Controller\PluginManager
      */
     protected $pluginControllerManager = null;
 
@@ -2492,6 +2492,7 @@ class Datagrid implements ServiceLocatorAwareInterface, EventManagerAwareInterfa
             throw new \Exception('No datasource defined! Please call "setDataSource()" first"');
         }
 
+
         // var_dump($this->getDataSource ()->executeDetail ( $filter ));
         $renderer = $this->$render();
 
@@ -2511,6 +2512,8 @@ class Datagrid implements ServiceLocatorAwareInterface, EventManagerAwareInterfa
             $oFilter->setFromColumn($filterCrudColumn['field'], $filterCrudColumn['filter_operator'] . $filterCrudColumn['filter_crud']);
             $this->getDataSource()->addFilter($oFilter);
         }
+
+
 
         $entityObject = $this->getDataSource()->findByIdentity($identity);
         $entityObject = (is_object($entityObject) || is_array($entityObject)) ? $entityObject : $this->getDataSource()->getDefaultBindObject();
@@ -2688,8 +2691,10 @@ class Datagrid implements ServiceLocatorAwareInterface, EventManagerAwareInterfa
         }
         else
         {
+
             $form = $this->getFrmMainCrud();
             $crudIdentity = $this->getIdentityColumnCrud($identity, $identityValue);
+
             if (is_array($crudIdentity)) {
                 if ($op == 'u'){
                     $result = $datasource->findByIdentity($crudIdentity);
@@ -2707,6 +2712,8 @@ class Datagrid implements ServiceLocatorAwareInterface, EventManagerAwareInterfa
                 $Obind = $datasource->getEntity();
                 $form->bind(new $Obind());
             }
+
+
 
             if ($op != '' && $request->isPost()) { // crud insert/update
 
@@ -2794,7 +2801,11 @@ class Datagrid implements ServiceLocatorAwareInterface, EventManagerAwareInterfa
                         }
 
 
-                        $url .= '?keepCache=1';
+                        if(strpos($url,"?")!==false){
+                            $url .= '&keepCache=1';
+                        }
+                        else
+                            $url .= '?keepCache=1';
                         //$url = $->getRouter()->assemble($redirect_route['params'], $redirect_route['options']);
                         $response = $this->getMvcEvent()->getResponse();
                         $response->getHeaders()->addHeaderLine('Location', $url);
@@ -2813,7 +2824,11 @@ class Datagrid implements ServiceLocatorAwareInterface, EventManagerAwareInterfa
                         }
 
                         //$url = $->getRouter()->assemble($redirect_route['params'], $redirect_route['options']);
-                        $url .= '?keepCache=1';
+                        if(strpos($url,"?")!==false){
+                            $url .= '&keepCache=1';
+                        }
+                        else
+                            $url .= '?keepCache=1';
                         $response = $this->getMvcEvent()->getResponse();
                         $response->getHeaders()->addHeaderLine('Location', $url);
                         // The HTTP response status code 302 Found is a common way of performing a redirection.
@@ -3378,7 +3393,7 @@ class Datagrid implements ServiceLocatorAwareInterface, EventManagerAwareInterfa
         return $this->forceRenderer;
     }
 
-    public function setForceRenderer(string $forceRenderer)
+    public function setForceRenderer($forceRenderer)
     {
         $this->forceRenderer = $forceRenderer;
         return $this;
