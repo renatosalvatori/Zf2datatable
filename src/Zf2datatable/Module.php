@@ -15,8 +15,11 @@ class Module
         $eventManager       = $app->getEventManager ();
         $services           = $e->getApplication ()->getServiceManager ();
         $shareEventManager  = $eventManager->getSharedManager (); // The shared event manager
+
+        /*
         $logger  = $services->get ( 'zf2datatable_logger' );
         $adapter = $services->get ( 'zf2datatable_adapter' );
+        */
 
         //listener
 
@@ -143,7 +146,7 @@ class Module
     {
         if (class_exists('DoctrineORMModule\Service\DBALConnectionFactory')) {
             return array(
-                'Factories' => array(
+                'factories' => array(
                     'doctrine.connection.orm_zfcDatagrid' => new \DoctrineORMModule\Service\DBALConnectionFactory('orm_zfcDatagrid'),
                     'doctrine.configuration.orm_zfcDatagrid' => new \DoctrineORMModule\Service\ConfigurationFactory('orm_zfcDatagrid'),
                     'doctrine.entitymanager.orm_zfcDatagrid' => new \DoctrineORMModule\Service\EntityManagerFactory('orm_zfcDatagrid'),
