@@ -1173,7 +1173,7 @@ class Datagrid implements ServiceLocatorAwareInterface, EventManagerAwareInterfa
                 }
 
 
-              //echo $property.'-'.$targetEntity.'-'.$sourceEntity.'<br />';
+              //echo $property.'-'.$targetEntity.'-'.$sourceEntity.PHP_EOL;
               $elm = $this->generateDoctrineFormElement($nameEntity, $targetEntity, $property) ;
 
               if ($elm instanceof \Zend\Form\Element){
@@ -1269,15 +1269,18 @@ class Datagrid implements ServiceLocatorAwareInterface, EventManagerAwareInterfa
             $elm->setLabel(strtoupper($name));
             $elm->setOptions(
                 array(
-                    'object_manager' => $entityManager,
-                    'target_class'  =>$targetEntity,
-                    'property'      =>  $option_elements[$name]['fieldName']
+                    'object_manager'    =>  $entityManager,
+                    'target_class'      =>  $targetEntity,
+                    'property'          =>  $option_elements[$name]['fieldName']
                     )
                 );
 
 
             if($option_elements[$name]['required'])
                 $elm->setAttributes(array('required'=>$option_elements[$name]['required']));
+
+            if($option_elements[$name]['multiple'])
+                $elm->setAttribute('multiple',true);
 
             $elm->setOption('priority', $priority);
 
@@ -1288,8 +1291,6 @@ class Datagrid implements ServiceLocatorAwareInterface, EventManagerAwareInterfa
                     $proxy->setObjectManager($entityManager);
                 }
             }
-
-
             return $elm;
 
         }

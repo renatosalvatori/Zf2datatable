@@ -268,10 +268,8 @@ return array(
 
             //LISTENER  AGGREGATE
             'zf2datatable.listener'=>'\Zf2datatable\Zf2listener\DatasourceListenerAggregate'
-        )
-        ,
-
-        'Factories' => array(
+        ),
+        'factories' => array(
             'zf2datatable\Datagrid' => 'Zf2datatable\Service\DatagridFactory',
             'zf2datatable_adapter' => 'Zf2datatable\Service\ZendDbAdapterFactory',
             'zf2datatable_logger' => 'Zf2datatable\Service\LoggerServiceFactory',
